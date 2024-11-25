@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <h1>Temperature Dashboard</h1>
+    <div class="json-container">
+      <h2>Raw temperatures data</h2>
+      <pre id="temperatures">--</pre>
+    </div>
+
+    <script
+      src="https://cdn.socket.io/4.8.0/socket.io.min.js"
+      integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      // Connect to the Socket.IO server
+      const socket = io("https://pescera.onrender.com/temperature"); // Replace with your API domain
+
+      // Listen for 'newTemperatureData' events
+      socket.on("newTemperatureData", (data) => {
+        console.log("New temperature data received:", data);
+
+        const currentParsedData =
+          document.getElementById("temperatures").textContent.trim() === "--"
+            ? []
+            : JSON.parse(document.getElementById("temperatures").textContent);
+
+        currentParsedData.push(data.temperatura);
+
+        document.getElementById("temperatures").textContent = JSON.stringify(
+          currentParsedData,
+          null,
+          4
+        );
+      });
+
+      // Optional: Fetch initial data when the page loads
+      fetch("https://pescera.onrender.com/temperature?limit=5")
+        .then((response) => response.json())
+        .then((data) => {
+          // Map only the 'temperatura' values
+          const temperatures = data.data.map((item) => item.temperatura);
+          document.getElementById("temperatures").textContent = JSON.stringify(
+            temperatures,
+            null,
+            4
+          );
+        })
+        .catch((error) => console.error("Error fetching initial data:", error));
+    </script>
+  </body>
+</html>

@@ -2,15 +2,76 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        text-align: center;
+        margin: 10px 0;
+      }
+      .dashboard-container {
+        display: flex;
+        width: 80%;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .json-container {
+        width: 45%;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .json-container h2 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      pre {
+        font-size: 1.5em;
+        text-align: center;
+      }
+      .image-container {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .image-container img {
+        max-width: 300px;
+        height: auto;
+        border-radius: 10px;
+      }
+    </style>
   </head>
-
   <body>
-    <h1>Temperature Dashboard</h1>
-    <div class="json-container">
-      <h2>Raw temperatures data</h2>
-      <pre id="temperatures">--</pre>
+    <h1>Dashboard</h1>
+
+    <div class="dashboard-container">
+      <!-- Temperature Section -->
+      <div class="json-container">
+        <h2>Temperature Data</h2>
+        <pre id="temperature-data">--</pre>
+        <div class="image-container">
+          <img id="temperature-image" src="" alt="Temperature Status" />
+        </div>
+      </div>
+
+      <!-- Turbidity Section -->
+      <div class="json-container">
+        <h2>Turbidity Data</h2>
+        <pre id="turbidity-data">--</pre>
+        <div class="image-container">
+          <img id="turbidity-image" src="" alt="Turbidity Status" />
+        </div>
+      </div>
     </div>
 
     <script
@@ -20,40 +81,86 @@
     ></script>
 
     <script>
-      // Connect to the Socket.IO server
-      const socket = io("https://pescera.onrender.com/temperature"); // Replace with your API domain
+      // Function to update the image based on the temperature
+      function updateTemperatureImage(temperature) {
+        const imageElement = document.getElementById("temperature-image");
+        if (temperature > 30) {
+          imageElement.src = "https://via.placeholder.com/300x200?text=Hot";
+        } else if (temperature < 20) {
+          imageElement.src = "https://via.placeholder.com/300x200?text=Cold";
+        } else {
+          imageElement.src = "https://via.placeholder.com/300x200?text=Normal";
+        }
+      }
 
-      // Listen for 'newTemperatureData' events
-      socket.on("newTemperatureData", (data) => {
-        console.log("New temperature data received:", data);
+      // Function to update the image based on the turbidity
+      function updateTurbidityImage(turbidity) {
+        const imageElement = document.getElementById("turbidity-image");
+        if (turbidity > 1000) {
+          imageElement.src = "https://via.placeholder.com/300x200?text=High";
+        } else if (turbidity < 500) {
+          imageElement.src = "https://via.placeholder.com/300x200?text=Low";
+        } else {
+          imageElement.src = "https://via.placeholder.com/300x200?text=Normal";
+        }
+      }
 
-        const currentParsedData =
-          document.getElementById("temperatures").textContent.trim() === "--"
-            ? []
-            : JSON.parse(document.getElementById("temperatures").textContent);
+      // Socket.IO for temperature data
+      const temperatureSocket = io("https://pescera.onrender.com/temperature");
 
-        currentParsedData.push(data.temperatura);
+      temperatureSocket.on("newTemperatureData", (data) => {
+        const latestTemperature = data.temperatura;
+        document.getElementById("temperature-data").textContent =
+          JSON.stringify(latestTemperature, null, 4);
 
-        document.getElementById("temperatures").textContent = JSON.stringify(
-          currentParsedData,
-          null,
-          4
-        );
+        updateTemperatureImage(latestTemperature);
       });
 
-      // Optional: Fetch initial data when the page loads
+      // Fetch initial temperature data
       fetch("https://pescera.onrender.com/temperature?limit=5")
         .then((response) => response.json())
         .then((data) => {
-          // Map only the 'temperatura' values
-          const temperatures = data.data.map((item) => item.temperatura);
-          document.getElementById("temperatures").textContent = JSON.stringify(
-            temperatures,
-            null,
-            4
-          );
+          const latestTemperature = data.data.sort((a, b) => b.id - a.id)[0]
+            ?.temperatura;
+
+          document.getElementById("temperature-data").textContent =
+            JSON.stringify(latestTemperature, null, 4);
+
+          updateTemperatureImage(latestTemperature);
         })
-        .catch((error) => console.error("Error fetching initial data:", error));
+        .catch((error) =>
+          console.error("Error fetching initial temperature data:", error)
+        );
+
+      // Socket.IO for turbidity data
+      const turbiditySocket = io("https://pescera.onrender.com/turbidity");
+
+      turbiditySocket.on("newTurbidityData", (data) => {
+        const latestTurbidity = data.turbidez;
+        document.getElementById("turbidity-data").textContent = JSON.stringify(
+          latestTurbidity,
+          null,
+          4
+        );
+
+        updateTurbidityImage(latestTurbidity);
+      });
+
+      // Fetch initial turbidity data
+      fetch("https://pescera.onrender.com/turbidity?limit=5")
+        .then((response) => response.json())
+        .then((data) => {
+          const latestTurbidity = data.data.sort((a, b) => b.id - a.id)[0]
+            ?.turbidez;
+
+          document.getElementById("turbidity-data").textContent =
+            JSON.stringify(latestTurbidity, null, 4);
+
+          updateTurbidityImage(latestTurbidity);
+        })
+        .catch((error) =>
+          console.error("Error fetching initial turbidity data:", error)
+        );
     </script>
   </body>
 </html>

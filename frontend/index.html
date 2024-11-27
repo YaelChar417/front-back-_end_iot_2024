@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Dashboard</title>
+    <title>Estado de la Pescera</title>
     <style>
-      /* General styles */
+      /* Estilos existentes */
       body {
         font-family: "Poppins", sans-serif;
         margin: 0;
         padding: 0;
-        background: linear-gradient(180deg, #95c5de, #1284d0);
+        background: linear-gradient(135deg, #409439, #14aba1);
         color: #fff;
         min-height: 100vh;
         display: flex;
@@ -32,7 +32,6 @@
         width: 90%;
         max-width: 1200px;
       }
-      /* Card styles */
       .json-container {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
@@ -41,15 +40,9 @@
         width: 100%;
         max-width: 450px;
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
         color: #fff;
         text-align: center;
-        margin-bottom: 30px; /* Agrega separación vertical */
-      }
-
-      .json-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
       }
       .json-container h2 {
         font-size: 1.8em;
@@ -67,17 +60,11 @@
         word-wrap: break-word;
         box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
       }
-      .image-container img {
+      img {
         max-width: 100%;
         height: auto;
-        border-radius: 10px;
-        margin-top: 10px;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        transition: transform 0.3s ease;
-      }
-      .image-container img:hover {
-        transform: scale(1.05);
+        display: none;
+        margin-top: 15px;
       }
       footer {
         margin-top: auto;
@@ -85,189 +72,121 @@
         text-align: center;
         font-size: 0.9em;
         background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-        border-radius: 10px;
         color: #ddd;
-      }
-      footer a {
-        color: #ffd700;
-        text-decoration: none;
-      }
-      footer a:hover {
-        text-decoration: underline;
-      }
-      /* Responsive */
-      @media screen and (max-width: 768px) {
-        .json-container {
-          width: 90%;
-        }
-        h1 {
-          font-size: 2em;
-        }
       }
     </style>
   </head>
   <body>
-    <h1>Estado de la pescera</h1>
-
+    <h1>Estado de la Pescera</h1>
     <div class="dashboard-container">
       <!-- Temperature Section -->
       <div class="json-container">
         <h2>Temperature Data</h2>
         <pre id="temperature-data">--</pre>
-        <div class="image-container">
-          <img id="temperature-image" src="" alt="Temperature Status" />
-        </div>
+        <pre id="temperature-id">--</pre>
+        <img id="temperature-img" src="" alt="Temperature Status" />
       </div>
 
       <!-- Turbidity Section -->
       <div class="json-container">
         <h2>Turbidity Data</h2>
         <pre id="turbidity-data">--</pre>
-        <div class="image-container">
-          <img id="turbidity-image" src="" alt="Turbidity Status" />
-        </div>
+        <pre id="turbidity-id">--</pre>
+        <img id="turbidity-img" src="" alt="Turbidity Status" />
+      </div>
+
+      <!-- Last Food Section -->
+      <div class="json-container">
+        <h2>Last Food Data</h2>
+        <pre id="lastfood-data">--</pre>
+        <pre id="lastfood-id">--</pre>
       </div>
     </div>
 
-    <div class="json-container">
-      <h2>Last food Data</h2>
-      <pre id="lastfood">--</pre>
-    </div>
-
-    <footer>Developed with 💻 and ☕ by <a href="#">Your Team</a></footer>
-
-    <script
-      src="https://cdn.socket.io/4.8.0/socket.io.min.js"
-      integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd"
-      crossorigin="anonymous"
-    ></script>
 
     <script>
-      // Function to update the image based on the temperature
-      function updateTemperatureImage(temperature) {
-        const imageElement = document.getElementById("temperature-image");
-        if (temperature > 30) {
-          imageElement.src = "imagenes/hot-Photoroom.png";
-        } else if (temperature < 20) {
-          imageElement.src = "imagenes/cold-Photoroom.png";
+      // Función para actualizar la imagen basada en temperatura
+      function updateTemperatureImage(value) {
+        const imgElement = document.getElementById("temperature-img");
+
+        if (value < 20) {
+          imgElement.src = "imagenes/cold-Photoroom.png"; // Imagen para temperatura baja
+        } else if (value > 30) {
+          imgElement.src = "imagenes/hot-Photoroom.png"; // Imagen para temperatura normal
         } else {
-          imageElement.src = "imagenes/normal-Photoroom.png";
+          imgElement.src = "imagenes/normal-Photoroom.png"; // Imagen para temperatura alta
         }
+
+        imgElement.style.display = "block"; // Mostrar la imagen
       }
 
-      // Function to update the image based on the turbidity
-      function updateTurbidityImage(turbidity) {
-        const imageElement = document.getElementById("turbidity-image");
-        if (turbidity > 1000) {
-          imageElement.src = "imagenes/sucia.jpeg";
-        } else if (turbidity < 500) {
-          imageElement.src = "imagenes/limpia.jpeg";
+      // Función para actualizar la imagen basada en turbidez
+      function updateTurbidityImage(value) {
+        const imgElement = document.getElementById("turbidity-img");
+
+        if (value <= 5) {
+          imgElement.src = "imagenes/limpia.jpeg"; // Imagen para agua clara
+        } else if (value <= 15) {
+          imgElement.src = "imagenes/sucia.jpeg"; // Imagen para turbidez moderada
         } else {
-          imageElement.src =
-            "imagenes/media.jpeg";
+          imgElement.src = "imagenes/media.jpeg"; // Imagen para alta turbidez
         }
+
+        imgElement.style.display = "block"; // Mostrar la imagen
       }
 
-      // Socket.IO for temperature data
-      const temperatureSocket = io("https://pescera.onrender.com/temperature");
+      // Función genérica para actualizar datos
+      function fetchAndUpdate(url, dataId, idId, valueKey, updateImageFn) {
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data && data.data) {
+              const sortedData = data.data.sort((a, b) => b.id - a.id);
+              const latestData = sortedData[0];
 
-      temperatureSocket.on("newTemperatureData", (data) => {
-        console.log("Received new temperature data:", data);
-        if (data && data.temperatura !== undefined) {
-          const latestTemperature = data.temperatura;
-          document.getElementById("temperature-data").textContent =
-            JSON.stringify(latestTemperature, null, 4);
-          updateTemperatureImage(latestTemperature);
-        } else {
-          document.getElementById("temperature-data").textContent =
-            "Error: No data available";
-        }
-      });
-
-      // Fetch all temperature data and show the one with the highest ID
-      fetch("https://pescera.onrender.com/temperature?limit=10000")
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && data.data) {
-            // Sort data by ID in descending order to get the latest one
-            const latestTemperature = data.data.sort((a, b) => b.id - a.id)[0]
-              ?.temperatura;
-            if (latestTemperature !== undefined) {
-              document.getElementById("temperature-data").textContent =
-                JSON.stringify(latestTemperature, null, 4);
-              updateTemperatureImage(latestTemperature);
+              if (latestData) {
+                const value = latestData[valueKey];
+                document.getElementById(dataId).textContent = value;
+                document.getElementById(
+                  idId
+                ).textContent = `ID: ${latestData.id}`;
+                if (updateImageFn) updateImageFn(value); // Actualizar imagen
+              } else {
+                document.getElementById(dataId).textContent =
+                  "No data available";
+                document.getElementById(idId).textContent = "--";
+              }
             } else {
-              document.getElementById("temperature-data").textContent =
-                "Error: No data available";
+              document.getElementById(dataId).textContent = "No data available";
+              document.getElementById(idId).textContent = "--";
             }
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching temperature data:", error)
-        );
+          })
+          .catch((error) =>
+            console.error(`Error fetching data from ${url}:`, error)
+          );
+      }
 
-      // Socket.IO for turbidity data
-
-      // Socket.IO for temperature data
-      const turbiditySocket = io("https://pescera.onrender.com/turbidity");
-
-      turbiditySocket.on("newTemperatureData", (data) => {
-        console.log("Received new temperature data:", data);
-        if (data && data.turbidez !== undefined) {
-          const latestTurbidity = data.turbidez;
-          document.getElementById("turbidity-data").textContent =
-            JSON.stringify(latestTurbidity, null, 4);
-          updateTurbidityImage(latestTurbidity);
-        } else {
-          document.getElementById("turbidity-data").textContent =
-            "Error: No data available";
-        }
-      });
-
-      // Fetch all temperature data and show the one with the highest ID
-      fetch("https://pescera.onrender.com/turbidity")
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && data.data) {
-            // Sort data by ID in descending order to get the latest one
-            const latestTurbidity = data.data.sort((a, b) => b.id - a.id)[0]
-              ?.turbidez;
-            if (latestTurbidity !== undefined) {
-              document.getElementById("turbidity-data").textContent =
-                JSON.stringify(latestTurbidity, null, 4);
-              updateTurbidityImage(latestTurbidity);
-            } else {
-              document.getElementById("turbidity-data").textContent =
-                "Error: No data available";
-            }
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching turbidity data:", error)
-        );
-      // Fetch para "last-food"
-      fetch("https://pescera.onrender.com/food")
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && data.data) {
-            const lastFoodTime = data.data.sort((a, b) => b.id - a.id)[0]
-              ?.ultima_comida;
-            if (lastFoodTime !== undefined) {
-              document.getElementById("lastfood").textContent = JSON.stringify(
-                lastFoodTime,
-                null,
-                4
-              );
-            } else {
-              document.getElementById("lastfood").textContent =
-                "Error: No data available";
-            }
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching last food data:", error)
-        );
+      // Actualizar cada sección con las funciones específicas
+      fetchAndUpdate(
+        "https://pescera.onrender.com/temperature",
+        "temperature-data",
+        "temperature-id",
+        "temperatura",
+        updateTemperatureImage
+      );
+      fetchAndUpdate(
+        "https://pescera.onrender.com/turbidity",
+        "turbidity-data",
+        "turbidity-id",
+        "turbidez",
+        updateTurbidityImage
+      );
+      fetchAndUpdate(
+        "https://pescera.onrender.com/food",
+        "lastfood-data",
+        "lastfood-id",
+        "ultima_comida"
+      );
     </script>
   </body>
 </html>

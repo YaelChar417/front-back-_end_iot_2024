@@ -123,9 +123,9 @@
       function updateTurbidityImage(value) {
         const imgElement = document.getElementById("turbidity-img");
 
-        if (value >= 1) {
+        if (value >= 0.40) {
           imgElement.src = "imagenes/limpia.jpeg"; // Imagen para agua clara
-        } else if (value < 1 && value >= 0.5) {
+        } else if (value < 0.40 && value >= 0.2) {
           imgElement.src = "imagenes/media.jpeg"; // Imagen para turbidez moderada
         } else {
           imgElement.src = "imagenes/sucia.jpeg"; // Imagen para alta turbidez

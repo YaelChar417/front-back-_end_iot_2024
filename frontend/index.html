@@ -10,7 +10,7 @@
         font-family: "Poppins", sans-serif;
         margin: 0;
         padding: 0;
-        background: linear-gradient(135deg, #409439, #14aba1);
+        background: linear-gradient(135deg, #3e9bb8, #14aba1);
         color: #fff;
         min-height: 100vh;
         display: flex;
@@ -103,7 +103,6 @@
       </div>
     </div>
 
-
     <script>
       // Función para actualizar la imagen basada en temperatura
       function updateTemperatureImage(value) {
@@ -124,12 +123,12 @@
       function updateTurbidityImage(value) {
         const imgElement = document.getElementById("turbidity-img");
 
-        if (value <= 5) {
+        if (value >= 1) {
           imgElement.src = "imagenes/limpia.jpeg"; // Imagen para agua clara
-        } else if (value <= 15) {
-          imgElement.src = "imagenes/sucia.jpeg"; // Imagen para turbidez moderada
+        } else if (value < 1 && value >= 0.5) {
+          imgElement.src = "imagenes/media.jpeg"; // Imagen para turbidez moderada
         } else {
-          imgElement.src = "imagenes/media.jpeg"; // Imagen para alta turbidez
+          imgElement.src = "imagenes/sucia.jpeg"; // Imagen para alta turbidez
         }
 
         imgElement.style.display = "block"; // Mostrar la imagen

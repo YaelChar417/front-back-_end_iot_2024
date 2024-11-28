@@ -1,0 +1,49 @@
+{
+  "name": "mvc-express",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "dev": "nodemon",
+    "start:render": "node dist/index.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "typescript",
+    "eslint",
+    "prettier"
+  ],
+  "author": "Yarl Charles Marin",
+  "license": "MIT",
+  "description": "Proyecto de IoT 2024 con Juan Ma <3",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "dotenv-flow": "^4.1.0",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "socket.io": "^4.8.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@tsconfig/node20": "^20.1.4",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.11.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.10.0",
+    "nodemon": "^3.1.7",
+    "prettier": "3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.0"
+  }
+}
